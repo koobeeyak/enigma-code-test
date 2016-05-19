@@ -40,7 +40,9 @@ def generate_state_abbrev_dict():
                     state_abbrev_dict[abbrev] = full_name
             return state_abbrev_dict
     except IOError as error:
+        # can't read state abbreviations file, exit the program
         print error
+        sys.exit(1)
 
 def get_index(element, l):
     """
@@ -124,7 +126,9 @@ def read_and_write_csv(csv_file):
                     # write finished row to csv file
                     csv_writer.writerow(row)
     except IOError as error:
+        # can't read or write csv, we need to exit
         print error
+        sys.exit(1)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
