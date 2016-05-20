@@ -20,6 +20,7 @@ def clean_bio(bio):
     """
     Replaces all whitespace in string with single space.
     """
+    # split() will split words between whitespace and line breaks into a list, join() will join those elements back into a string
     words = bio.split()
     cleaned_bio = " ".join(words)
     return cleaned_bio
@@ -66,11 +67,13 @@ def normalize_date(date):
     So check each part of date twice with different defaults. If anything changes, there is missing info and we won't return it.
     Owe some credit for idea to: http://stackoverflow.com/q/8434854/6142442
     """
+    # first, see if we can parse. If not, this is an arbitrary string and we return None
     try:
         day_a = parser.parse(date, default = datetime(2015, 1, 1))
     except ValueError:
-        # date cannot be parsed at all, it's an arbitrary string
         return None
+    # datetime(YEAR, MONTH, DAY)
+    # will compare day_a with alternate day default in day_b
     day_b = parser.parse(date, default = datetime(2015, 1, 2))
     # compare two different month defaults
     month_a = parser.parse(date, default = datetime(2015, 1, 1))
