@@ -3,7 +3,7 @@
 import sys
 import csv
 
-from dateutil.parser import parse
+from dateutil import parser
 from datetime import datetime
 
 # rather than hard coding specific column numbers, these can be changed if csv file has different header names
@@ -11,6 +11,10 @@ BIO_COLUMN_NAME = "bio"
 STATE_COLUMN_NAME = "state"
 START_DATE_COLUMN_NAME = "start_date"
 START_DATE_DESC_COLUMN_NAME = "start_date_description"
+# file names
+INFILE_NAME = 'test.csv'
+OUTFILE_NAME = 'solution.csv'
+STATE_ABBREVIATIONS_FILE_NAME = 'state_abbreviations.csv'
 
 def clean_bio(bio):
     """
@@ -25,8 +29,8 @@ def generate_state_abbrev_dict():
     From local file state_abbreviations.csv return dict of key: state abbreviations, value: full state name.
     """
     try:
-        with open("state_abbreviations.csv", 'rb') as INFILE:
-            csv_reader = csv.reader(INFILE)
+        with open(STATE_ABBREVIATIONS_FILE_NAME, 'rb') as infile:
+            csv_reader = csv.reader(infile)
             state_abbrev_dict = {}
             header = True
             for row in csv_reader:
@@ -63,33 +67,34 @@ def normalize_date(date):
     Owe some credit for idea to: http://stackoverflow.com/q/8434854/6142442
     """
     try:
-        day_a = parse(date, default = datetime(2015, 1, 1))
+        day_a = parser.parse(date, default = datetime(2015, 1, 1))
     except ValueError:
         # date cannot be parsed at all, it's an arbitrary string
         return None
-    day_b = parse(date, default = datetime(2015, 1, 2))
+    day_b = parser.parse(date, default = datetime(2015, 1, 2))
     # compare two different month defaults
-    month_a = parse(date, default = datetime(2015, 1, 1))
-    month_b = parse(date, default = datetime(2015, 2, 1))
+    month_a = parser.parse(date, default = datetime(2015, 1, 1))
+    month_b = parser.parse(date, default = datetime(2015, 2, 1))
     # compare two different year defaults
-    year_a = parse(date, default = datetime(2015, 1, 1))
-    year_b = parse(date, default = datetime(2016, 1, 1))
+    year_a = parser.parse(date, default = datetime(2015, 1, 1))
+    year_b = parser.parse(date, default = datetime(2016, 1, 1))
     if day_a == day_b and month_a == month_b and year_a == year_b:
         # there are no differences, e.g. date provided is complete
         # we can return any of the above formatted dates since they are all equal
         return day_a.strftime("%Y-%m-%d")
     else:
+        # one of the above reverts to default, indicating a missing datetime field
         return None
 
-def read_and_write_csv(csv_file):
+def main():
     """
     Read csv file.
     Clean bio, replace state abbreviation with full state name, try to normalize date, and write everything to new file solutions.csv.
     """
     try:
-        with open(csv_file, 'rb') as INFILE, open('solution.csv', 'wb') as OUTFILE:
-            csv_reader = csv.reader(INFILE)
-            csv_writer = csv.writer(OUTFILE)
+        with open(INFILE_NAME, 'rb') as infile, open(OUTFILE_NAME, 'wb') as outfile:
+            csv_reader = csv.reader(infile)
+            csv_writer = csv.writer(outfile)
             header = True
             state_abbrev_dict = generate_state_abbrev_dict()
             for row in csv_reader:
@@ -131,9 +136,4 @@ def read_and_write_csv(csv_file):
         sys.exit(1)
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        # we need a filename to be passed
-        print "Usage:" 
-        print "$ python csv_test.py test.csv"
-    else:
-        read_and_write_csv(sys.argv[1])
+    main()

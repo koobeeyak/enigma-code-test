@@ -9,5 +9,5 @@
  * additional "start\_date\_description" column containing leftover incomplete dates
 
 ##Usage
-    $ python . test.csv
+    $ python . 
 
